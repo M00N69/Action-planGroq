@@ -209,18 +209,18 @@ def display_recommendations(recommendations_df):
         </thead>
         <tbody>
     """
-    
+
     # Remplir le tableau avec les données
     for index, row in recommendations_df.iterrows():
-        table_html += f"""
-        <tr>
-            <td>{row["Numéro d'exigence"]}</td>
-            <td>{row["Correction immédiate"].replace('\n', '<br>')}</td>
-            <td>{row["Type de preuve"].replace('\n', '<br>')}</td>
-            <td>{row["Cause probable"].replace('\n', '<br>')}</td>
-            <td>{row["Action corrective"].replace('\n', '<br>')}</td>
-        </tr>
-        """
+        table_html += f"<tr><td>{row['Numéro d'exigence']}</td>"
+        
+        # Ajouter une colonne seulement si elle existe, sinon insérer une cellule vide
+        table_html += f"<td>{row.get('Correction immédiate', '').replace('\n', '<br>')}</td>"
+        table_html += f"<td>{row.get('Type de preuve', '').replace('\n', '<br>')}</td>"
+        table_html += f"<td>{row.get('Cause probable', '').replace('\n', '<br>')}</td>"
+        table_html += f"<td>{row.get('Action corrective', '').replace('\n', '<br>')}</td>"
+        
+        table_html += "</tr>"
 
     table_html += "</tbody></table>"
 
