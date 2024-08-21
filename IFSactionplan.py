@@ -92,7 +92,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
 {general_context}
 
 Voici une non-conformité issue d'un audit IFS Food 8 :
-- Exigence : {non_conformity['Numéro d'exigence']}
+- Exigence : {non_conformity["Numéro d'exigence"]}
 - Description : {non_conformity['Exigence IFS Food 8']}
 Informations supplémentaires tirées du guide IFSv8 pour cette exigence :
 {guide_row['Good practice']}
