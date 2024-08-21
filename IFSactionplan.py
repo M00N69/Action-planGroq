@@ -101,7 +101,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     - Éléments à vérifier : {guide_row['Elements to check']}
     - Exemple de question à poser : {guide_row['Example questions']}
 
-    Fournissez une recommandation comprenant de manière structurée impérativement les mentions suivantes :
+    Fournissez une recommandation comprenant :
     - Correction immédiate
     - Type de preuve
     - Cause probable
@@ -120,8 +120,10 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
         )
         full_recommendation = chat_completion.choices[0].message.content
 
-        # Supposons que la réponse soit structurée et qu'on peut extraire chaque section par un séparateur connu
-        # Par exemple : "Correction immédiate : ... \nType de preuve : ... \nCause probable : ... \nAction corrective : ..."
+        # Debug: Afficher la recommandation complète
+        st.write("Réponse complète de l'API:", full_recommendation)
+
+        # Supposons que la réponse soit structurée
         sections = {
             "Correction immédiate": "",
             "Type de preuve": "",
@@ -157,6 +159,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     except Exception as e:
         st.error(f"Erreur lors de la génération de la recommandation: {str(e)}")
         return None
+    
 
 # Fonction pour récupérer les informations du guide en fonction du numéro d'exigence
 def get_guide_info(num_exigence, guide_df):
