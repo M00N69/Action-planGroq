@@ -145,6 +145,7 @@ def display_recommendations(recommendations_df):
             text-align: left;
             vertical-align: top;
             word-wrap: break-word;
+            white-space: pre-wrap; /* Gère le retour à la ligne et les espaces */
         }
         .recommendations-table th {
             background-color: #f2f2f2;
@@ -165,7 +166,10 @@ def display_recommendations(recommendations_df):
         <thead>
             <tr>
                 <th>Numéro d'exigence</th>
-                <th>Recommandation</th>
+                <th>Correction immédiate</th>
+                <th>Type de preuve</th>
+                <th>Cause probable</th>
+                <th>Action corrective</th>
             </tr>
         </thead>
         <tbody>
@@ -176,7 +180,10 @@ def display_recommendations(recommendations_df):
         table_html += f"""
         <tr>
             <td>{row["Numéro d'exigence"]}</td>
-            <td>{row["Recommandation"].replace('\n', '<br>')}</td>
+            <td>{row["Correction immédiate"].replace('\n', '<br>')}</td>
+            <td>{row["Type de preuve"].replace('\n', '<br>')}</td>
+            <td>{row["Cause probable"].replace('\n', '<br>')}</td>
+            <td>{row["Action corrective"].replace('\n', '<br>')}</td>
         </tr>
         """
 
@@ -184,6 +191,7 @@ def display_recommendations(recommendations_df):
 
     # Afficher le tableau
     st.markdown(table_html, unsafe_allow_html=True)
+
 # Fonction pour créer un fichier texte des recommandations
 def generate_text_file(recommendations_df):
     text_content = ""
