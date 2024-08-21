@@ -132,26 +132,21 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
         }
 
         current_section = None
-        keywords = sections.keys()
 
-        # Extraction des sections ligne par ligne
+        # Extraction des sections
         for line in full_recommendation.splitlines():
             line = line.strip()
             st.write(f"Traitement de la ligne: '{line}'")
-            if line.startswith("Correction immédiate"):
+
+            if line.lower().startswith("correction immédiate"):
                 current_section = "Correction immédiate"
-                st.write(f"Section détectée: {current_section}")
-            elif line.startswith("Type de preuve"):
+            elif line.lower().startswith("type de preuve"):
                 current_section = "Type de preuve"
-                st.write(f"Section détectée: {current_section}")
-            elif line.startswith("Cause probable"):
+            elif line.lower().startswith("cause probable"):
                 current_section = "Cause probable"
-                st.write(f"Section détectée: {current_section}")
-            elif line.startswith("Action corrective"):
+            elif line.lower().startswith("action corrective"):
                 current_section = "Action corrective"
-                st.write(f"Section détectée: {current_section}")
-            elif current_section:
-                st.write(f"Ajout à la section {current_section}: {line}")
+            elif current_section:  # Si nous sommes dans une section, ajouter le contenu
                 sections[current_section] += line + " "
 
         # Nettoyer les sections
