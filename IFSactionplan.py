@@ -123,7 +123,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
         # Debug: Afficher la recommandation complète
         st.write("Réponse complète de l'API:", full_recommendation)
 
-        # Initialisation des sections
+        # Extraction manuelle des sections basées sur mots-clés
         sections = {
             "Correction immédiate": "",
             "Type de preuve": "",
@@ -131,26 +131,29 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
             "Action corrective": ""
         }
 
-        # Logique pour extraire les sections
         current_section = None
-        for line in full_recommendation.splitlines():
-            if line.strip().startswith("Correction immédiate"):
+        lines = full_recommendation.splitlines()
+
+        for i, line in enumerate(lines):
+            stripped_line = line.strip()
+            if stripped_line.startswith("Correction immédiate"):
                 current_section = "Correction immédiate"
-            elif line.strip().startswith("Type de preuve"):
+            elif stripped_line.startswith("Type de preuve"):
                 current_section = "Type de preuve"
-            elif line.strip().startswith("Cause probable"):
+            elif stripped_line.startswith("Cause probable"):
                 current_section = "Cause probable"
-            elif line.strip().startswith("Action corrective"):
+            elif stripped_line.startswith("Action corrective"):
                 current_section = "Action corrective"
             elif current_section:
-                # Ajout de la ligne à la section actuelle
-                sections[current_section] += line.strip() + " "
+                if i + 1 < len(lines) and not lines[i + 1].strip().startswith(("Correction immédiate", "Type de preuve", "Cause probable", "Action corrective")):
+                    sections[current_section] += stripped_line + " "
+                else:
+                    sections[current_section] += stripped_line
 
-        # Retirer les espaces inutiles en début et fin de chaîne
+        # Nettoyer les sections
         for key in sections:
             sections[key] = sections[key].strip()
 
-        # Retourner les données sous forme de dictionnaire
         return {
             "Numéro d'exigence": non_conformity["Numéro d'exigence"],
             "Correction immédiate": sections["Correction immédiate"],
