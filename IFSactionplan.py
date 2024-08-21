@@ -206,7 +206,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row, csv_df):
         base_recommendation = chat_completion.choices[0].message.content
 
         # Extraire les sections du CSV pour l'exigence correspondante
-        csv_recommendation = csv_df[csv_df['Numéro d'exigence'] == non_conformity["Numéro d'exigence"]].iloc[0]
+        csv_recommendation = csv_df[csv_df["Numéro d'exigence"] == non_conformity["Numéro d'exigence"]].iloc[0]
         structured_recommendation = extract_sections(csv_recommendation['Recommandation'])
 
         # Combiner la recommandation générée avec le contenu structuré du CSV
