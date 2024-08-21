@@ -99,7 +99,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     Il est impératif que les recommandations prennent en compte les éléments suivants du guide IFSv8 pour cette exigence :
     - Bonnes pratiques à suivre : {guide_row['Good practice']}
     - Éléments à vérifier : {guide_row['Elements to check']}
-    - Exemple de question à poser : {guide_row['Example question']}
+    - Exemple de question à poser : {guide_row['Example questions']}
 
     Fournissez une recommandation comprenant :
     - Correction immédiate
