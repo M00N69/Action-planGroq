@@ -64,6 +64,7 @@ def add_css_styles():
         """,
         unsafe_allow_html=True
     )
+
 # Fonction pour configurer le client Groq
 def get_groq_client():
     """Initialise et renvoie un client Groq avec la clé API."""
@@ -79,21 +80,8 @@ def load_action_plan(uploaded_file):
     except Exception as e:
         st.error(f"Erreur lors de la lecture du fichier: {str(e)}")
         return None
-# Fonction pour extraire les sections d'une recommandation issue du CSV
-def extract_sections(recommendation):
-    sections = ["Correction immédiate", "Type de preuve", "Cause probable", "Action corrective"]
-    result = {}
-    for i, section in enumerate(sections):
-        start = recommendation.find(section)
-        if start != -1:
-            end = recommendation.find(sections[i+1], start) if i+1 < len(sections) else len(recommendation)
-            result[section] = recommendation[start + len(section) + 1:end].strip()
-        else:
-            result[section] = ""
-    return result
-
-# Fonction pour générer une recommandation avec un tableau structuré
-def generate_ai_recommendation_groq(non_conformity, guide_row, csv_df):
+# Fonction pour générer un prompt basé sur une non-conformité
+def generate_ai_recommendation_groq(non_conformity, guide_row):
     client = get_groq_client()
     general_context = (
         "En tant qu'expert en IFS Food 8 et dans la gestion des plans d'action, "
@@ -130,101 +118,57 @@ def generate_ai_recommendation_groq(non_conformity, guide_row, csv_df):
             messages=messages,
             model="llama-3.1-70b-versatile"
         )
-        base_recommendation = chat_completion.choices[0].message.content
-
-        # Extraire les sections du CSV pour l'exigence correspondante
-        csv_recommendation = csv_df[csv_df["Numéro d'exigence"] == non_conformity["Numéro d'exigence"]].iloc[0]
-        structured_recommendation = extract_sections(csv_recommendation['Recommandation'])
-
-        # Combiner la recommandation générée avec le contenu structuré du CSV
-        final_recommendation = f"""
-        {base_recommendation}
-        
-        ### Recommandation Structurée:
-        - **Correction immédiate**: {structured_recommendation["Correction immédiate"]}
-        - **Type de preuve**: {structured_recommendation["Type de preuve"]}
-        - **Cause probable**: {structured_recommendation["Cause probable"]}
-        - **Action corrective**: {structured_recommendation["Action corrective"]}
-        """
-
-        return final_recommendation
-
+        return chat_completion.choices[0].message.content
     except Exception as e:
         st.error(f"Erreur lors de la génération de la recommandation: {str(e)}")
         return None
-# Fonction pour extraire les sections d'une recommandation issue du CSV
-def extract_sections(recommendation):
-    sections = ["Correction immédiate", "Type de preuve", "Cause probable", "Action corrective"]
-    result = {}
-    for i, section in enumerate(sections):
-        start = recommendation.find(section)
-        if start != -1:
-            end = recommendation.find(sections[i+1], start) if i+1 < len(sections) else len(recommendation)
-            result[section] = recommendation[start + len(section) + 1:end].strip()
-        else:
-            result[section] = ""
-    return result
 
-# Fonction pour générer une recommandation avec un tableau structuré
-def generate_ai_recommendation_groq(non_conformity, guide_row, csv_df):
-    client = get_groq_client()
-    general_context = (
-        "En tant qu'expert en IFS Food 8 et dans la gestion des plans d'action, "
-        "tu dois me fournir des recommandations structurées pour la correction, "
-        "le type de preuve, la cause probable, et les actions correctives."
-    )
-    prompt = f"""
-    {general_context}
+# Fonction pour récupérer les informations du guide en fonction du numéro d'exigence
+def get_guide_info(num_exigence, guide_df):
+    guide_row = guide_df[guide_df['NUM_REQ'] == num_exigence].iloc[0]
+    return guide_row
 
-    Voici une non-conformité issue d'un audit IFS Food 8 :
-    - Exigence : {non_conformity["Numéro d'exigence"]}
-    - Description : {non_conformity['Exigence IFS Food 8']}
-    - Constat détaillé : {non_conformity['Explication (par l’auditeur/l’évaluateur)']}
-    
-    Il est impératif que les recommandations prennent en compte les éléments suivants du guide IFSv8 pour cette exigence :
-    - Bonnes pratiques à suivre : {guide_row['Good practice']}
-    - Éléments à vérifier : {guide_row['Elements to check']}
-    - Exemple de question à poser : {guide_row['Example questions']}
+# Fonction pour afficher les recommandations avec un rendu Markdown
+def display_recommendations(recommendations_df):
+    for index, row in recommendations_df.iterrows():
+        st.markdown(f"""### Numéro d'exigence: {row["Numéro d'exigence"]}""")
+        st.markdown(row["Recommandation"])
+# Fonction pour créer un fichier texte des recommandations
+def generate_text_file(recommendations_df):
+    text_content = ""
+    for index, row in recommendations_df.iterrows():
+        text_content += f"""Numéro d'exigence: {row["Numéro d'exigence"]}\n"""
+        text_content += f"""{row["Recommandation"]}\n\n"""
+    return text_content
 
-    Fournissez une recommandation comprenant :
-    - Correction immédiate
-    - Type de preuve
-    - Cause probable
-    - Action corrective
-    """
-    
-    messages = [
-        {"role": "system", "content": "Veuillez générer une recommandation structurée pour la non-conformité suivante :"},
-        {"role": "user", "content": prompt}
-    ]
+# Fonction pour créer un fichier DOCX des recommandations
+def generate_docx_file(recommendations_df):
+    doc = Document()
+    for index, row in recommendations_df.iterrows():
+        doc.add_heading(f"""Numéro d'exigence: {row["Numéro d'exigence"]}""", level=2)
+        doc.add_paragraph(row["Recommandation"])
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    return buffer
 
-    try:
-        chat_completion = client.chat.completions.create(
-            messages=messages,
-            model="llama-3.1-70b-versatile"
-        )
-        base_recommendation = chat_completion.choices[0].message.content
+# Fonction pour créer un fichier PDF des recommandations
+def generate_pdf_file(recommendations_df):
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    for index, row in recommendations_df.iterrows():
+        pdf.set_font("Arial", style='B', size=14)
+        pdf.cell(200, 10, txt=f"""Numéro d'exigence: {row["Numéro d'exigence"]}""", ln=True)
+        pdf.set_font("Arial", size=12)
+        pdf.multi_cell(0, 10, txt=row["Recommandation"])
+        pdf.ln(10)
+    buffer = BytesIO()
+    pdf.output(buffer)
+    buffer.seek(0)
+    return buffer
 
-        # Extraire les sections du CSV pour l'exigence correspondante
-        csv_recommendation = csv_df[csv_df["Numéro d'exigence"] == non_conformity["Numéro d'exigence"]].iloc[0]
-        structured_recommendation = extract_sections(csv_recommendation['Recommandation'])
-
-        # Combiner la recommandation générée avec le contenu structuré du CSV
-        final_recommendation = f"""
-        {base_recommendation}
-        
-        ### Recommandation Structurée:
-        - **Correction immédiate**: {structured_recommendation["Correction immédiate"]}
-        - **Type de preuve**: {structured_recommendation["Type de preuve"]}
-        - **Cause probable**: {structured_recommendation["Cause probable"]}
-        - **Action corrective**: {structured_recommendation["Action corrective"]}
-        """
-
-        return final_recommendation
-
-    except Exception as e:
-        st.error(f"Erreur lors de la génération de la recommandation: {str(e)}")
-        return None
 # Fonction principale
 def main():
     add_css_styles()
@@ -243,7 +187,6 @@ def main():
             
             # Charger le guide IFSv8 depuis le fichier CSV
             guide_df = pd.read_csv("https://raw.githubusercontent.com/M00N69/Action-planGroq/main/Guide%20Checklist_IFS%20Food%20V%208%20-%20CHECKLIST.csv")
-            csv_df = pd.read_csv("/path/to/your/csv_file.csv")  # Add the path to your CSV file here
 
             # Préparation d'une liste pour les recommandations
             recommendations = []
@@ -258,7 +201,7 @@ def main():
 
                 # Affichage d'un spinner pendant la génération des recommandations
                 with st.spinner('Génération des recommandations en cours...'):
-                    recommendation_text = generate_ai_recommendation_groq(non_conformity, guide_row, csv_df)
+                    recommendation_text = generate_ai_recommendation_groq(non_conformity, guide_row)
                     if recommendation_text:
                         st.success("Recommandation générée avec succès!")
                         recommendations.append({
@@ -273,6 +216,7 @@ def main():
                 st.subheader("Résumé des Recommandations")
                 display_recommendations(recommendations_df)
 
+                
                 # Télécharger au format CSV
                 st.download_button(
                     label="Télécharger les recommandations (CSV)",
@@ -299,6 +243,6 @@ def main():
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 )
 
+
 if __name__ == "__main__":
     main()
-
