@@ -120,18 +120,40 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
         )
         full_recommendation = chat_completion.choices[0].message.content
 
-        # Ici, vous devez implémenter une logique pour extraire les différentes sections de la recommandation
-        correction_imm = "extrait de full_recommendation"
-        type_preuve = "extrait de full_recommendation"
-        cause_prob = "extrait de full_recommendation"
-        action_corr = "extrait de full_recommendation"
+        # Supposons que la réponse soit structurée et qu'on peut extraire chaque section par un séparateur connu
+        # Par exemple : "Correction immédiate : ... \nType de preuve : ... \nCause probable : ... \nAction corrective : ..."
+        sections = {
+            "Correction immédiate": "",
+            "Type de preuve": "",
+            "Cause probable": "",
+            "Action corrective": ""
+        }
+
+        current_section = None
+        for line in full_recommendation.splitlines():
+            if "Correction immédiate" in line:
+                current_section = "Correction immédiate"
+            elif "Type de preuve" in line:
+                current_section = "Type de preuve"
+            elif "Cause probable" in line:
+                current_section = "Cause probable"
+            elif "Action corrective" in line:
+                current_section = "Action corrective"
+            elif current_section:
+                sections[current_section] += line.strip() + "\n"
+
+        # Retirer les sauts de ligne inutiles
+        for key in sections:
+            sections[key] = sections[key].strip()
 
         return {
-            "Correction immédiate": correction_imm,
-            "Type de preuve": type_preuve,
-            "Cause probable": cause_prob,
-            "Action corrective": action_corr
+            "Numéro d'exigence": non_conformity["Numéro d'exigence"],
+            "Correction immédiate": sections["Correction immédiate"],
+            "Type de preuve": sections["Type de preuve"],
+            "Cause probable": sections["Cause probable"],
+            "Action corrective": sections["Action corrective"]
         }
+
     except Exception as e:
         st.error(f"Erreur lors de la génération de la recommandation: {str(e)}")
         return None
