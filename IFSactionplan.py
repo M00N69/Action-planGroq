@@ -226,6 +226,7 @@ def display_recommendations(recommendations_df):
 
     # Afficher le tableau
     st.markdown(table_html, unsafe_allow_html=True)
+    
 
 # Fonction pour créer un fichier texte des recommandations
 def generate_text_file(recommendations_df):
