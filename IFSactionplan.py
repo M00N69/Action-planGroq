@@ -89,20 +89,22 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
         "le type de preuve, la cause probable, et les actions correctives."
     )
     prompt = f"""
-{general_context}
+    {general_context}
 
-Voici une non-conformité issue d'un audit IFS Food 8 :
-- Exigence : {non_conformity["Numéro d'exigence"]}
-- Description : {non_conformity['Exigence IFS Food 8']}
-Informations supplémentaires tirées du guide IFSv8 pour cette exigence :
-{guide_row['Good practice']}
+    Voici une non-conformité issue d'un audit IFS Food 8 :
+    - Exigence : {non_conformity["Numéro d'exigence"]}
+    - Description : {non_conformity['Exigence IFS Food 8']}
+    - Constat détaillé : {non_conformity['Explication (par l’auditeur/l’évaluateur)']}
+    
+    Informations supplémentaires tirées du guide IFSv8 pour cette exigence :
+    {guide_row['Good practice']}
 
-Fournissez une recommandation comprenant :
-- Correction immédiate
-- Type de preuve
-- Cause probable
-- Action corrective
-"""
+    Fournissez une recommandation comprenant :
+    - Correction immédiate
+    - Type de preuve
+    - Cause probable
+    - Action corrective
+    """
     
     messages = [
         {"role": "system", "content": "Veuillez générer une recommandation structurée pour la non-conformité suivante :"},
