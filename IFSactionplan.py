@@ -123,7 +123,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
         # Debug: Afficher la recommandation complète
         st.write("Réponse complète de l'API:", full_recommendation)
 
-        # Extraction manuelle des sections basées sur mots-clés
+        # Initialisation des sections
         sections = {
             "Correction immédiate": "",
             "Type de preuve": "",
@@ -131,28 +131,23 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
             "Action corrective": ""
         }
 
+        # Logique d'extraction en utilisant des bornes de sections
+        keywords = list(sections.keys())
         current_section = None
-        lines = full_recommendation.splitlines()
 
-        for i, line in enumerate(lines):
-            stripped_line = line.strip()
-            if stripped_line.startswith("Correction immédiate"):
-                current_section = "Correction immédiate"
-            elif stripped_line.startswith("Type de preuve"):
-                current_section = "Type de preuve"
-            elif stripped_line.startswith("Cause probable"):
-                current_section = "Cause probable"
-            elif stripped_line.startswith("Action corrective"):
-                current_section = "Action corrective"
+        for line in full_recommendation.splitlines():
+            line = line.strip()
+            if any(line.startswith(keyword) for keyword in keywords):
+                current_section = next((keyword for keyword in keywords if line.startswith(keyword)), None)
             elif current_section:
-                if i + 1 < len(lines) and not lines[i + 1].strip().startswith(("Correction immédiate", "Type de preuve", "Cause probable", "Action corrective")):
-                    sections[current_section] += stripped_line + " "
-                else:
-                    sections[current_section] += stripped_line
+                sections[current_section] += line + " "
 
         # Nettoyer les sections
         for key in sections:
             sections[key] = sections[key].strip()
+
+        # Afficher les sections extraites pour vérification
+        st.write("Sections extraites:", sections)
 
         return {
             "Numéro d'exigence": non_conformity["Numéro d'exigence"],
