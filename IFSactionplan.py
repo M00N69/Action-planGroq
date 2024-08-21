@@ -101,7 +101,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     - Éléments à vérifier : {guide_row['Elements to check']}
     - Exemple de question à poser : {guide_row['Example questions']}
 
-    Fournissez une recommandation comprenant :
+    Fournissez une recommandation comprenant de manière structurée impérativement les mentions suivantes :
     - Correction immédiate
     - Type de preuve
     - Cause probable
