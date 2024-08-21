@@ -131,14 +131,14 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
             "Action corrective": ""
         }
 
-        # Logique d'extraction en utilisant des bornes de sections
-        keywords = list(sections.keys())
         current_section = None
+        keywords = sections.keys()
 
+        # Extraction des sections
         for line in full_recommendation.splitlines():
             line = line.strip()
-            if any(line.startswith(keyword) for keyword in keywords):
-                current_section = next((keyword for keyword in keywords if line.startswith(keyword)), None)
+            if line.endswith(":"):  # Une section commence, on détecte le mot-clé
+                current_section = next((keyword for keyword in keywords if keyword in line), None)
             elif current_section:
                 sections[current_section] += line + " "
 
