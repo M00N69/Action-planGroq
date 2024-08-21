@@ -182,7 +182,7 @@ def main():
             st.markdown('<div class="dataframe-container">' + action_plan_df.to_html(classes='dataframe', index=False) + '</div>', unsafe_allow_html=True)
             
             # Charger le guide IFSv8 depuis le fichier CSV
-            guide_df = pd.read_csv("/mnt/data/Guide Checklist_IFS Food V 8 - CHECKLIST.csv")
+            guide_df = pd.read_csv("https://raw.githubusercontent.com/M00N69/Action-planGroq/main/Guide%20Checklist_IFS%20Food%20V%208%20-%20CHECKLIST.csv")
 
             # Préparation d'une liste pour les recommandations
             recommendations = []
