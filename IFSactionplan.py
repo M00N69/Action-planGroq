@@ -112,7 +112,7 @@ Fournissez une recommandation comprenant :
     try:
         chat_completion = client.chat.completions.create(
             messages=messages,
-            model="llama-3.1-8b-instant"
+            model="llama-3.1-70b-versatile"
         )
         return chat_completion.choices[0].message.content
     except Exception as e:
