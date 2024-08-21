@@ -118,125 +118,21 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
             messages=messages,
             model="llama-3.1-70b-versatile"
         )
-        full_recommendation = chat_completion.choices[0].message.content
-
-        # Debug: Afficher la recommandation complète
-        st.write("Réponse complète de l'API:", full_recommendation)
-
-        # Initialisation des sections
-        sections = {
-            "Correction immédiate": "",
-            "Type de preuve": "",
-            "Cause probable": "",
-            "Action corrective": ""
-        }
-
-        current_section = None
-
-        # Extraction des sections
-        for line in full_recommendation.splitlines():
-            line = line.strip()
-            st.write(f"Traitement de la ligne: '{line}'")
-
-            if line.lower().startswith("correction immédiate"):
-                current_section = "Correction immédiate"
-            elif line.lower().startswith("type de preuve"):
-                current_section = "Type de preuve"
-            elif line.lower().startswith("cause probable"):
-                current_section = "Cause probable"
-            elif line.lower().startswith("action corrective"):
-                current_section = "Action corrective"
-            elif current_section:  # Si nous sommes dans une section, ajouter le contenu
-                sections[current_section] += line + " "
-
-        # Nettoyer les sections
-        for key in sections:
-            sections[key] = sections[key].strip()
-            st.write(f"Contenu de la section {key}: {sections[key]}")
-
-        return {
-            "Numéro d'exigence": non_conformity["Numéro d'exigence"],
-            "Correction immédiate": sections["Correction immédiate"],
-            "Type de preuve": sections["Type de preuve"],
-            "Cause probable": sections["Cause probable"],
-            "Action corrective": sections["Action corrective"]
-        }
-
+        return chat_completion.choices[0].message.content
     except Exception as e:
         st.error(f"Erreur lors de la génération de la recommandation: {str(e)}")
         return None
-    
 
 # Fonction pour récupérer les informations du guide en fonction du numéro d'exigence
 def get_guide_info(num_exigence, guide_df):
     guide_row = guide_df[guide_df['NUM_REQ'] == num_exigence].iloc[0]
     return guide_row
 
-# Fonction pour afficher les recommandations avec un rendu tableau
+# Fonction pour afficher les recommandations avec un rendu Markdown
 def display_recommendations(recommendations_df):
-    # Appliquer des styles CSS pour le tableau
-    st.markdown(
-        """
-        <style>
-        .recommendations-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-        .recommendations-table th, .recommendations-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-            vertical-align: top;
-            word-wrap: break-word;
-            white-space: pre-wrap; /* Gère le retour à la ligne et les espaces */
-        }
-        .recommendations-table th {
-            background-color: #f2f2f2;
-            color: #333;
-            font-weight: bold;
-        }
-        .recommendations-table td {
-            background-color: #fff;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Construire le tableau HTML
-    table_html = """
-    <table class="recommendations-table">
-        <thead>
-            <tr>
-                <th>Numéro d'exigence</th>
-                <th>Correction immédiate</th>
-                <th>Type de preuve</th>
-                <th>Cause probable</th>
-                <th>Action corrective</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
-
-    # Remplir le tableau avec les données
     for index, row in recommendations_df.iterrows():
-        table_html += f"<tr><td>{row["Numéro d'exigence"]}</td>"
-        
-        # Ajouter une colonne seulement si elle existe, sinon insérer une cellule vide
-        table_html += f"<td>{row.get('Correction immédiate', '').replace('\n', '<br>')}</td>"
-        table_html += f"<td>{row.get('Type de preuve', '').replace('\n', '<br>')}</td>"
-        table_html += f"<td>{row.get('Cause probable', '').replace('\n', '<br>')}</td>"
-        table_html += f"<td>{row.get('Action corrective', '').replace('\n', '<br>')}</td>"
-        
-        table_html += "</tr>"
-
-    table_html += "</tbody></table>"
-
-    # Afficher le tableau
-    st.markdown(table_html, unsafe_allow_html=True)
-    
-
+        st.markdown(f"""### Numéro d'exigence: {row["Numéro d'exigence"]}""")
+        st.markdown(row["Recommandation"])
 # Fonction pour créer un fichier texte des recommandations
 def generate_text_file(recommendations_df):
     text_content = ""
@@ -350,4 +246,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
