@@ -123,7 +123,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
         # Debug: Afficher la recommandation complète
         st.write("Réponse complète de l'API:", full_recommendation)
 
-        # Supposons que la réponse soit structurée
+        # Initialisation des sections
         sections = {
             "Correction immédiate": "",
             "Type de preuve": "",
@@ -131,23 +131,26 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
             "Action corrective": ""
         }
 
+        # Logique pour extraire les sections
         current_section = None
         for line in full_recommendation.splitlines():
-            if "Correction immédiate" in line:
+            if line.strip().startswith("Correction immédiate"):
                 current_section = "Correction immédiate"
-            elif "Type de preuve" in line:
+            elif line.strip().startswith("Type de preuve"):
                 current_section = "Type de preuve"
-            elif "Cause probable" in line:
+            elif line.strip().startswith("Cause probable"):
                 current_section = "Cause probable"
-            elif "Action corrective" in line:
+            elif line.strip().startswith("Action corrective"):
                 current_section = "Action corrective"
             elif current_section:
-                sections[current_section] += line.strip() + "\n"
+                # Ajout de la ligne à la section actuelle
+                sections[current_section] += line.strip() + " "
 
-        # Retirer les sauts de ligne inutiles
+        # Retirer les espaces inutiles en début et fin de chaîne
         for key in sections:
             sections[key] = sections[key].strip()
 
+        # Retourner les données sous forme de dictionnaire
         return {
             "Numéro d'exigence": non_conformity["Numéro d'exigence"],
             "Correction immédiate": sections["Correction immédiate"],
