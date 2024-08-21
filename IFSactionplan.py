@@ -216,19 +216,7 @@ def main():
                 st.subheader("Résumé des Recommandations")
                 display_recommendations(recommendations_df)
 
-                # Télécharger au format Excel
-                output = BytesIO()
-                with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                    action_plan_df.to_excel(writer, index=False, sheet_name='Recommandations')
-                    writer.close()  # Cette ligne est en fait optionnelle, car `with` le fait automatiquement
-                processed_data = output.getvalue()
                 
-                st.download_button(
-                    label="Télécharger les recommandations (Excel)",
-                    data=processed_data,
-                    file_name="recommandations_ifs_food.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
                 # Télécharger au format CSV
                 st.download_button(
                     label="Télécharger les recommandations (CSV)",
