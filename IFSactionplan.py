@@ -118,7 +118,20 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
             messages=messages,
             model="llama-3.1-70b-versatile"
         )
-        return chat_completion.choices[0].message.content
+        full_recommendation = chat_completion.choices[0].message.content
+
+        # Ici, vous devez implémenter une logique pour extraire les différentes sections de la recommandation
+        correction_imm = "extrait de full_recommendation"
+        type_preuve = "extrait de full_recommendation"
+        cause_prob = "extrait de full_recommendation"
+        action_corr = "extrait de full_recommendation"
+
+        return {
+            "Correction immédiate": correction_imm,
+            "Type de preuve": type_preuve,
+            "Cause probable": cause_prob,
+            "Action corrective": action_corr
+        }
     except Exception as e:
         st.error(f"Erreur lors de la génération de la recommandation: {str(e)}")
         return None
