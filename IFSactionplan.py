@@ -134,20 +134,30 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
         current_section = None
         keywords = sections.keys()
 
-        # Extraction des sections
+        # Extraction des sections ligne par ligne
         for line in full_recommendation.splitlines():
             line = line.strip()
-            if line.endswith(":"):  # Une section commence, on détecte le mot-clé
-                current_section = next((keyword for keyword in keywords if keyword in line), None)
+            st.write(f"Traitement de la ligne: '{line}'")
+            if line.startswith("Correction immédiate"):
+                current_section = "Correction immédiate"
+                st.write(f"Section détectée: {current_section}")
+            elif line.startswith("Type de preuve"):
+                current_section = "Type de preuve"
+                st.write(f"Section détectée: {current_section}")
+            elif line.startswith("Cause probable"):
+                current_section = "Cause probable"
+                st.write(f"Section détectée: {current_section}")
+            elif line.startswith("Action corrective"):
+                current_section = "Action corrective"
+                st.write(f"Section détectée: {current_section}")
             elif current_section:
+                st.write(f"Ajout à la section {current_section}: {line}")
                 sections[current_section] += line + " "
 
         # Nettoyer les sections
         for key in sections:
             sections[key] = sections[key].strip()
-
-        # Afficher les sections extraites pour vérification
-        st.write("Sections extraites:", sections)
+            st.write(f"Contenu de la section {key}: {sections[key]}")
 
         return {
             "Numéro d'exigence": non_conformity["Numéro d'exigence"],
