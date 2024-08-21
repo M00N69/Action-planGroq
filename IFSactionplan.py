@@ -212,7 +212,7 @@ def display_recommendations(recommendations_df):
 
     # Remplir le tableau avec les données
     for index, row in recommendations_df.iterrows():
-        table_html += f"<tr><td>{row['Numéro d'exigence']}</td>"
+        table_html += f"<tr><td>{row["Numéro d'exigence"]}</td>"
         
         # Ajouter une colonne seulement si elle existe, sinon insérer une cellule vide
         table_html += f"<td>{row.get('Correction immédiate', '').replace('\n', '<br>')}</td>"
