@@ -128,11 +128,62 @@ def get_guide_info(num_exigence, guide_df):
     guide_row = guide_df[guide_df['NUM_REQ'] == num_exigence].iloc[0]
     return guide_row
 
-# Fonction pour afficher les recommandations avec un rendu Markdown
+# Fonction pour afficher les recommandations avec un rendu tableau
 def display_recommendations(recommendations_df):
+    # Appliquer des styles CSS pour le tableau
+    st.markdown(
+        """
+        <style>
+        .recommendations-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .recommendations-table th, .recommendations-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+        .recommendations-table th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: bold;
+        }
+        .recommendations-table td {
+            background-color: #fff;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Construire le tableau HTML
+    table_html = """
+    <table class="recommendations-table">
+        <thead>
+            <tr>
+                <th>Numéro d'exigence</th>
+                <th>Recommandation</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+    
+    # Remplir le tableau avec les données
     for index, row in recommendations_df.iterrows():
-        st.markdown(f"""### Numéro d'exigence: {row["Numéro d'exigence"]}""")
-        st.markdown(row["Recommandation"])
+        table_html += f"""
+        <tr>
+            <td>{row["Numéro d'exigence"]}</td>
+            <td>{row["Recommandation"].replace('\n', '<br>')}</td>
+        </tr>
+        """
+
+    table_html += "</tbody></table>"
+
+    # Afficher le tableau
+    st.markdown(table_html, unsafe_allow_html=True)
 # Fonction pour créer un fichier texte des recommandations
 def generate_text_file(recommendations_df):
     text_content = ""
