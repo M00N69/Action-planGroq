@@ -96,8 +96,10 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     - Description : {non_conformity['Exigence IFS Food 8']}
     - Constat détaillé : {non_conformity['Explication (par l’auditeur/l’évaluateur)']}
     
-    Informations supplémentaires tirées du guide IFSv8 pour cette exigence :
-    {guide_row['Good practice']}
+    Il est impératif que les recommandations prennent en compte les éléments suivants du guide IFSv8 pour cette exigence :
+    - Bonnes pratiques à suivre : {guide_row['Good practice']}
+    - Éléments à vérifier : {guide_row['Elements to check']}
+    - Exemple de question à poser : {guide_row['Example question']}
 
     Fournissez une recommandation comprenant :
     - Correction immédiate
