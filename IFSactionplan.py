@@ -173,7 +173,28 @@ def generate_pdf_file(recommendations_df):
 def main():
     add_css_styles()
 
-    st.markdown('<div class="banner"><img src="https://raw.githubusercontent.com/M00N69/Gemini-Knowledge/main/visipilot%20banner.PNG" alt="Banner" width="80%"></div>', unsafe_allow_html=True)
+    st.markdown(
+    """
+    <style>
+    
+    /* Banner styling */
+    .banner {
+        background-image: url('https://github.com/M00N69/BUSCAR/blob/main/logo%2002%20copie.jpg?raw=true');
+        background-size: cover;
+        padding: 75px;
+        text-align: center;
+    }
+    .dataframe td {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+    }
+    </style>
+    <div class="banner"></div>
+    """,
+    unsafe_allow_html=True
+)
+
+    
     st.markdown('<div class="main-header">Assistant VisiPilot pour Plan d\'Actions IFS</div>', unsafe_allow_html=True)
     st.write("Téléchargez votre plan d'action et obtenez des recommandations pour les corrections et les actions correctives.")
 
