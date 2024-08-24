@@ -158,7 +158,7 @@ def main():
             
             st.write("## Plan d'Action IFS")
             for index, row in action_plan_df.iterrows():
-                cols = st.columns([2, 3, 3, 2])
+                cols = st.columns([1, 3, 3, 2])
                 cols[0].write(row["Numéro d'exigence"])
                 cols[1].write(row["Exigence IFS Food 8"])
                 cols[2].write(row["Explication (par l’auditeur/l’évaluateur)"])
