@@ -5,64 +5,42 @@ from docx import Document
 from fpdf import FPDF
 from groq import Groq
 
-# Configuration de la page de l'application
+# Configuration de la page
 st.set_page_config(layout="wide")
 
-# Fonction pour ajouter des styles CSS personnalisés
-def add_css_styles():
-    st.markdown(
-        """
-        <style>
-        .main-header {
-            font-size: 24px;
-            font-weight: bold;
-            color: #004080;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .banner {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .dataframe-container {
-            margin-bottom: 40px;
-        }
-        .recommendation-container {
-            padding: 20px;
-            margin-bottom: 30px;
-            border: 1px solid #004080;
-            border-radius: 5px;
-            background-color: #f0f8ff;
-        }
-        .recommendation-header {
-            font-weight: bold;
-            font-size: 18px;
-            color: #004080;
-            margin-bottom: 10px;
-        }
-        .recommendation-content {
-            margin-bottom: 10px;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-        .spinner-message {
-            font-size: 22px;
-            color: red;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .warning {
-            color: red;
-            font-weight: bold;
-        }
-        .success {
-            color: green;
-            font-weight: bold;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+# Ajouter les styles CSS personnalisés
+st.markdown(
+    """
+    <style>
+    .main-header {
+        font-size: 24px;
+        font-weight: bold;
+        color: #004080;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    .dataframe-container {
+        margin-bottom: 20px;
+    }
+    .banner {
+        background-image: url('https://github.com/M00N69/BUSCAR/blob/main/logo%2002%20copie.jpg?raw=true');
+        background-size: cover;
+        padding: 75px;
+        text-align: center;
+    }
+    .dataframe td {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+    }
+    </style>
+    <div class="banner"></div>
+    """,
+    unsafe_allow_html=True
+)
+
+# Initialisation des variables d'état pour les expanders
+if 'recommendation_expanders' not in st.session_state:
+    st.session_state['recommendation_expanders'] = {}
 
 # Fonction pour configurer le client Groq
 def get_groq_client():
@@ -131,75 +109,9 @@ def get_guide_info(num_exigence, guide_df):
     guide_row = guide_df[guide_df['NUM_REQ'] == num_exigence].iloc[0]
     return guide_row
 
-# Fonction pour afficher les recommandations avec un rendu Markdown
-def display_recommendations(recommendations_df):
-    for index, row in recommendations_df.iterrows():
-        with st.expander(f"Recommandation pour Numéro d'exigence: {row["Numéro d'exigence"]}"):
-            st.markdown(row["Recommandation"])
-
-# Fonction pour créer un fichier texte des recommandations
-def generate_text_file(recommendations_df):
-    text_content = ""
-    for index, row in recommendations_df.iterrows():
-        text_content += f"""Numéro d'exigence: {row["Numéro d'exigence"]}\n"""
-        text_content += f"""{row["Recommandation"]}\n\n"""
-    return text_content
-
-# Fonction pour créer un fichier DOCX des recommandations
-def generate_docx_file(recommendations_df):
-    doc = Document()
-    for index, row in recommendations_df.iterrows():
-        doc.add_heading(f"""Numéro d'exigence: {row["Numéro d'exigence"]}""", level=2)
-        doc.add_paragraph(row["Recommandation"])
-    buffer = BytesIO()
-    doc.save(buffer)
-    buffer.seek(0)
-    return buffer
-
-# Fonction pour créer un fichier PDF des recommandations
-def generate_pdf_file(recommendations_df):
-    pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-    for index, row in recommendations_df.iterrows():
-        pdf.set_font("Arial", style='B', size=14)
-        pdf.cell(200, 10, txt=f"""Numéro d'exigence: {row["Numéro d'exigence"]}""", ln=True)
-        pdf.set_font("Arial", size=12)
-        pdf.multi_cell(0, 10, txt=row["Recommandation"])
-        pdf.ln(10)
-    buffer = BytesIO()
-    pdf.output(buffer)
-    buffer.seek(0)
-    return buffer
-
 # Fonction principale
 def main():
-    add_css_styles()
-
-    st.markdown(
-        """
-        <div class="banner"></div>
-        """,
-        unsafe_allow_html=True
-    )
-
     st.markdown('<div class="main-header">Assistant VisiPilot pour Plan d\'Actions IFS</div>', unsafe_allow_html=True)
-
-    # Ajout de la dropdown d'explications
-    with st.expander("Comment utiliser cette application"):
-        st.write("""
-            **Étapes d'utilisation:**
-            
-            1. **Téléchargez votre plan d'actions IFSv8:** Cliquez sur le bouton "Téléchargez votre plan d'action" et sélectionnez le fichier Excel contenant les non-conformités.
-            2. **Sélectionnez un numéro d'exigence:** Après avoir chargé le fichier, choisissez un numéro d'exigence spécifique à partir du menu déroulant.
-            3. **Recommandations:** Cliquez sur "Générer Recommandations" pour obtenir des suggestions de correction, preuves et actions correctives pour la non-conformité sélectionnée.
-            4. **Téléchargez les recommandations:** Une fois les recommandations générées, vous pouvez les télécharger sous forme de fichier texte ou DOCX.
-
-            **Résultat attendu:**
-            
-            Vous obtiendrez une liste de recommandations personnalisées basées sur les non-conformités identifiées dans votre plan d'action. Ces recommandations incluent des actions correctives, les types de preuves nécessaires, la cause probable, et les corrections immédiates.
-        """)
 
     st.write("Téléchargez votre plan d'action et obtenez des recommandations pour les corrections et les actions correctives.")
 
@@ -209,68 +121,39 @@ def main():
     if uploaded_file:
         action_plan_df = load_action_plan(uploaded_file)
         if action_plan_df is not None:
-            st.markdown('<div class="dataframe-container">' + action_plan_df.to_html(classes='dataframe', index=False) + '</div>', unsafe_allow_html=True)
-            
-            # Charger le guide IFSv8 depuis le fichier CSV
             guide_df = pd.read_csv("https://raw.githubusercontent.com/M00N69/Action-planGroq/main/Guide%20Checklist_IFS%20Food%20V%208%20-%20CHECKLIST.csv")
 
-            # Préparation d'une liste pour les recommandations
-            recommendations = []
-
-            # Sélection du numéro d'exigence
-            selected_exigence = st.selectbox("Sélectionnez un numéro d'exigence pour générer des recommandations :", action_plan_df["Numéro d'exigence"].unique())
-
-            # Disposition en colonne pour le bouton
-            col1, col2 = st.columns([3, 1])
-            with col2:
-                if st.button("Générer Recommandations"):
-                    # Récupérer la ligne spécifique du guide correspondant à l'exigence sélectionnée
-                    guide_row = get_guide_info(selected_exigence, guide_df)
-                    non_conformity = action_plan_df[action_plan_df["Numéro d'exigence"] == selected_exigence].iloc[0]
-
-                    # Affichage d'un spinner pendant la génération des recommandations
-                    with st.spinner('Génération des recommandations en cours...'):
-                        recommendation_text = generate_ai_recommendation_groq(non_conformity, guide_row)
-                        if recommendation_text:
-                            st.success("Recommandation générée avec succès!")
-                            recommendations.append({
-                                "Numéro d'exigence": selected_exigence,
-                                "Recommandation": recommendation_text
-                            })
-                            # Ajouter la recommandation au DataFrame du plan d'action
-                            action_plan_df.loc[action_plan_df["Numéro d'exigence"] == selected_exigence, "Recommandation"] = recommendation_text
-
-            if recommendations:
-                recommendations_df = pd.DataFrame(recommendations)
-                st.subheader("Résumé des Recommandations")
-                display_recommendations(recommendations_df)
-                
-                # Télécharger au format CSV
-                st.download_button(
-                    label="Télécharger les recommandations (CSV)",
-                    data=recommendations_df.to_csv(index=False),
-                    file_name="recommandations_ifs_food.csv",
-                    mime="text/csv",
+            # Affichage du plan d'action avec les boutons de génération des recommandations
+            for index, row in action_plan_df.iterrows():
+                cols = st.columns([4, 1])
+                cols[0].markdown(f"**Numéro d'exigence:** {row['Numéro d'exigence']} - {row['Exigence IFS Food 8']}")
+                cols[1].button(
+                    "Générer Recommandation", 
+                    key=f"generate_{index}",
+                    on_click=generate_recommendation_and_expand,
+                    args=(index, row, guide_df)
                 )
 
-                # Télécharger au format texte
-                text_file = generate_text_file(recommendations_df)
-                st.download_button(
-                    label="Télécharger les recommandations (Texte)",
-                    data=text_file,
-                    file_name="recommandations_ifs_food.txt",
-                    mime="text/plain",
-                )
-
-                # Télécharger au format DOCX
-                docx_file = generate_docx_file(recommendations_df)
-                st.download_button(
-                    label="Télécharger les recommandations (DOCX)",
-                    data=docx_file,
-                    file_name="recommandations_ifs_food.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                )
-
+                # Afficher les recommandations dans un expander s'il est déjà généré
+                if st.session_state['recommendation_expanders'].get(index):
+                    st.session_state['recommendation_expanders'][index].markdown(
+                        st.session_state['recommendation_expanders'][index]['text']
+                    )
+                    
+def generate_recommendation_and_expand(index, row, guide_df):
+    guide_row = get_guide_info(row["Numéro d'exigence"], guide_df)
+    recommendation_text = generate_ai_recommendation_groq(row, guide_row)
+    
+    if recommendation_text:
+        st.success("Recommandation générée avec succès!")
+        expander = st.expander(f"Recommandation pour Numéro d'exigence: {row['Numéro d'exigence']}", expanded=True)
+        expander.markdown(recommendation_text)
+        
+        # Sauvegarde de l'expander dans le session_state
+        st.session_state['recommendation_expanders'][index] = {
+            'text': recommendation_text,
+            'expander': expander
+        }
 
 if __name__ == "__main__":
     main()
