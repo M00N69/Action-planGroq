@@ -50,9 +50,8 @@ def get_groq_client():
 # Fonction pour charger le fichier Excel avec le plan d'action
 def load_action_plan(uploaded_file):
     try:
-        action_plan_df = pd.read_excel(uploaded_file, header=12)
-        expected_columns = ["Numéro d'exigence", "Exigence IFS Food 8", "Notation", "Explication (par l’auditeur/l’évaluateur)"]
-        action_plan_df = action_plan_df[expected_columns]
+        action_plan_df = pd.read_excel(uploaded_file, header=0)
+        action_plan_df.columns = ["Numéro d'exigence", "Exigence IFS Food 8", "Notation", "Explication (par l’auditeur/l’évaluateur)"]
         return action_plan_df
     except Exception as e:
         st.error(f"Erreur lors de la lecture du fichier: {str(e)}")
@@ -85,7 +84,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     - Cause probable
     - Action corrective
 
-    Faire une conclusion, en français, en se basant sur le Guide IFSv8 en reprenant évnetuellement les éléments des questions à poser et également attirer l'attention sur les bonnes pratiques concernant l'exigence en question.
+    Faire une conclusion, en français, en se basant sur le Guide IFSv8 en reprenant éventuellement les éléments des questions à poser et également attirer l'attention sur les bonnes pratiques concernant l'exigence en question.
     Pour cette conclusion il faut se limiter strictement aux recommandations et informations issus du guide IFSv8 en particulier {guide_row['Good practice']} et {guide_row['Example questions']}
     """
     
@@ -106,8 +105,11 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
 
 # Fonction pour récupérer les informations du guide en fonction du numéro d'exigence
 def get_guide_info(num_exigence, guide_df):
-    guide_row = guide_df[guide_df['NUM_REQ'] == num_exigence].iloc[0]
-    return guide_row
+    guide_row = guide_df[guide_df['NUM_REQ'] == num_exigence]
+    if guide_row.empty:
+        st.error(f"Aucune correspondance trouvée pour le numéro d'exigence : {num_exigence}")
+        return None
+    return guide_row.iloc[0]
 
 # Fonction principale
 def main():
@@ -126,7 +128,7 @@ def main():
             # Affichage du plan d'action avec les boutons de génération des recommandations
             for index, row in action_plan_df.iterrows():
                 cols = st.columns([4, 1])
-                cols[0].markdown(f"**Numéro d'exigence:** {row["Numéro d'exigence"]} - {row['Exigence IFS Food 8']}")
+                cols[0].markdown(f"**Numéro d'exigence:** {row['Numéro d'exigence']} - {row['Exigence IFS Food 8']}")
                 cols[1].button(
                     "Générer Recommandation", 
                     key=f"generate_{index}",
@@ -135,25 +137,27 @@ def main():
                 )
 
                 # Afficher les recommandations dans un expander s'il est déjà généré
-                if st.session_state['recommendation_expanders'].get(index):
+                if index in st.session_state['recommendation_expanders']:
                     st.session_state['recommendation_expanders'][index].markdown(
                         st.session_state['recommendation_expanders'][index]['text']
                     )
                     
 def generate_recommendation_and_expand(index, row, guide_df):
     guide_row = get_guide_info(row["Numéro d'exigence"], guide_df)
-    recommendation_text = generate_ai_recommendation_groq(row, guide_row)
     
-    if recommendation_text:
-        st.success("Recommandation générée avec succès!")
-        expander = st.expander(f"Recommandation pour Numéro d'exigence: {row["Numéro d'exigence"]}", expanded=True)
-        expander.markdown(recommendation_text)
+    if guide_row is not None:
+        recommendation_text = generate_ai_recommendation_groq(row, guide_row)
         
-        # Sauvegarde de l'expander dans le session_state
-        st.session_state['recommendation_expanders'][index] = {
-            'text': recommendation_text,
-            'expander': expander
-        }
+        if recommendation_text:
+            st.success("Recommandation générée avec succès!")
+            expander = st.expander(f"Recommandation pour Numéro d'exigence: {row['Numéro d'exigence']}", expanded=True)
+            expander.markdown(recommendation_text)
+            
+            # Sauvegarde de l'expander dans le session_state
+            st.session_state['recommendation_expanders'][index] = {
+                'text': recommendation_text,
+                'expander': expander
+            }
 
 if __name__ == "__main__":
     main()
