@@ -29,18 +29,26 @@ st.markdown(
         white-space: normal !important;
         word-wrap: break-word !important;
     }
+    /* Styles pour la bannière */
+    .banner {
+        background-image: url('https://github.com/M00N69/BUSCAR/blob/main/logo%2002%20copie.jpg?raw=true');
+        background-size: cover;
+        padding: 75px;
+        text-align: center;
+    }
     /* Styles personnalisés pour l'expander */
-    .streamlit-expanderHeader {
-        background-color: #e0f7fa !important; /* Fond bleu clair */
-        color: #004080 !important; /* Couleur du texte */
-        font-weight: bold;
+    .st-expander {
+        background-color: #e0f7fa !important; /* Fond bleu clair pour l'expander */
+        border: 1px solid #004080 !important; /* Bordure bleu foncé */
         border-radius: 5px;
     }
-    .streamlit-expander {
-        border: 1px solid #004080 !important;
-        border-radius: 5px;
-        background-color: #e0f7fa !important;
-        padding: 10px;
+    .st-expander .st-expander-content {
+        background-color: #e0f7fa !important; /* Fond bleu clair à l'intérieur */
+    }
+    .st-expander .st-expander-header {
+        background-color: #e0f7fa !important; /* Fond bleu clair pour le header */
+        color: #004080 !important; /* Couleur du texte */
+        font-weight: bold;
     }
     /* Styles personnalisés pour les boutons */
     div.stButton > button {
@@ -59,7 +67,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 
 # Fonction pour configurer le client Groq
 def get_groq_client():
