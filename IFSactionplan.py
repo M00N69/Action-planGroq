@@ -50,7 +50,12 @@ def get_groq_client():
 # Fonction pour charger le fichier Excel avec le plan d'action
 def load_action_plan(uploaded_file):
     try:
-        action_plan_df = pd.read_excel(uploaded_file, header=0)
+        # Charger le fichier Excel
+        action_plan_df = pd.read_excel(uploaded_file, header=12)
+        # Sélectionner uniquement les colonnes pertinentes
+        expected_columns = ["requirementNo", "requirementText", "requirementScore", "requirementExplanation"]
+        action_plan_df = action_plan_df[expected_columns]
+        # Renommer les colonnes en français
         action_plan_df.columns = ["Numéro d'exigence", "Exigence IFS Food 8", "Notation", "Explication (par l’auditeur/l’évaluateur)"]
         return action_plan_df
     except Exception as e:
@@ -69,7 +74,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     {general_context}
 
     Voici une non-conformité issue d'un audit IFS Food 8 :
-    - Exigence : {non_conformity["Numéro d'exigence"]}
+    - Exigence : {non_conformity['Numéro d\'exigence']}
     - Description : {non_conformity['Exigence IFS Food 8']}
     - Constat détaillé : {non_conformity['Explication (par l’auditeur/l’évaluateur)']}
     
@@ -128,7 +133,7 @@ def main():
             # Affichage du plan d'action avec les boutons de génération des recommandations
             for index, row in action_plan_df.iterrows():
                 cols = st.columns([4, 1])
-                cols[0].markdown(f"**Numéro d'exigence:** {row["Numéro d'exigence"]} - {row['Exigence IFS Food 8']}")
+                cols[0].markdown(f"**Numéro d'exigence:** {row['Numéro d\'exigence']} - {row['Exigence IFS Food 8']}")
                 cols[1].button(
                     "Générer Recommandation", 
                     key=f"generate_{index}",
@@ -150,7 +155,7 @@ def generate_recommendation_and_expand(index, row, guide_df):
         
         if recommendation_text:
             st.success("Recommandation générée avec succès!")
-            expander = st.expander(f"Recommandation pour Numéro d'exigence: {row["Numéro d'exigence"]}", expanded=True)
+            expander = st.expander(f"Recommandation pour Numéro d'exigence: {row['Numéro d\'exigence']}", expanded=True)
             expander.markdown(recommendation_text)
             
             # Sauvegarde de l'expander dans le session_state
