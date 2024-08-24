@@ -129,7 +129,22 @@ def get_guide_info(num_exigence, guide_df):
 # Fonction principale
 def main():
     st.markdown('<div class="main-header">Assistant VisiPilot pour Plan d\'Actions IFS</div>', unsafe_allow_html=True)
+    
+  # Ajout de la dropdown d'explications
+    with st.expander("Comment utiliser cette application"):
+        st.write("""
+            **Étapes d'utilisation:**
+            
+            1. **Téléchargez votre plan d'actions IFSv8:** Cliquez sur le bouton "Téléchargez votre plan d'action" et sélectionnez le fichier Excel contenant les non-conformités.
+            2. **Sélectionnez un numéro d'exigence:** Après avoir chargé le fichier, choisissez un numéro d'exigence spécifique à partir du menu déroulant.
+            3. **Recommandations:** Cliquez sur "Générer Recommandations" pour obtenir des suggestions de correction, preuves et actions correctives pour la non-conformité sélectionnée.
+            4. **Téléchargez les recommandations:** Une fois les recommandations générées, vous pouvez les télécharger sous forme de fichier texte ou DOCX.
 
+            **Résultat attendu:**
+            
+            Vous obtiendrez une liste de recommandations personnalisées basées sur les non-conformités identifiées dans votre plan d'action. Ces recommandations incluent des actions correctives, les types de preuves nécessaires, la cause probable, et les corrections immédiates.
+        """)
+        
     st.write("Téléchargez votre plan d'action et obtenez des recommandations pour les corrections et les actions correctives.")
 
     # Initialiser la clé 'recommendation_expanders' si elle n'existe pas
