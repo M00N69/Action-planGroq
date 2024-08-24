@@ -55,6 +55,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
 # Fonction pour configurer le client Groq
 def get_groq_client():
     """Initialise et renvoie un client Groq avec la clé API."""
