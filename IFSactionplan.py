@@ -20,12 +20,13 @@ st.markdown(
         margin-bottom: 20px;
     }
     /* Styles pour la bannière */
-    .banner {
+      .banner {
         background-image: url('https://github.com/M00N69/BUSCAR/blob/main/logo%2002%20copie.jpg?raw=true');
-        background-size: cover;
-        height: 200px;
+        background-size: contain;
+        background-repeat: no-repeat;
         background-position: center;
-        margin-bottom: 20px;
+        height: 100px;
+        margin-bottom: 1rem;
     }
     /* Styles personnalisés pour l'expander */
     div.streamlit-expanderHeader {
