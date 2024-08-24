@@ -146,7 +146,7 @@ def generate_recommendation_and_expand(index, row, guide_df):
     
     if recommendation_text:
         st.success("Recommandation générée avec succès!")
-        expander = st.expander(f"Recommandation pour Numéro d'exigence: {row['Numéro d'exigence']}", expanded=True)
+        expander = st.expander(f"Recommandation pour Numéro d'exigence: {row["Numéro d'exigence"]}", expanded=True)
         expander.markdown(recommendation_text)
         
         # Sauvegarde de l'expander dans le session_state
