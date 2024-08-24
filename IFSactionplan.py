@@ -144,8 +144,7 @@ def main():
             
             Vous obtiendrez une liste de recommandations personnalisées basées sur les non-conformités identifiées dans votre plan d'action. Ces recommandations incluent des actions correctives, les types de preuves nécessaires, la cause probable, et les corrections immédiates.
         """)
-        
-    st.write("Téléchargez votre plan d'action et obtenez des recommandations pour les corrections et les actions correctives.")
+
 
     # Initialiser la clé 'recommendation_expanders' si elle n'existe pas
     if 'recommendation_expanders' not in st.session_state:
