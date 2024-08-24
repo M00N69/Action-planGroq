@@ -126,7 +126,7 @@ def main():
             # Affichage du plan d'action avec les boutons de génération des recommandations
             for index, row in action_plan_df.iterrows():
                 cols = st.columns([4, 1])
-                cols[0].markdown(f"**Numéro d'exigence:** {row['Numéro d'exigence']} - {row['Exigence IFS Food 8']}")
+                cols[0].markdown(f"**Numéro d'exigence:** {row["Numéro d'exigence"]} - {row['Exigence IFS Food 8']}")
                 cols[1].button(
                     "Générer Recommandation", 
                     key=f"generate_{index}",
