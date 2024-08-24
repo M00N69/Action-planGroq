@@ -19,36 +19,23 @@ st.markdown(
     .dataframe-container {
         margin-bottom: 20px;
     }
-    .banner {
-        background-image: url('https://github.com/M00N69/BUSCAR/blob/main/logo%2002%20copie.jpg?raw=true');
-        background-size: cover;
-        padding: 75px;
-        text-align: center;
-    }
-    .dataframe td {
-        white-space: normal !important;
-        word-wrap: break-word !important;
-    }
     /* Styles pour la bannière */
     .banner {
         background-image: url('https://github.com/M00N69/BUSCAR/blob/main/logo%2002%20copie.jpg?raw=true');
         background-size: cover;
         padding: 75px;
         text-align: center;
+        margin-bottom: 20px;
     }
     /* Styles personnalisés pour l'expander */
     .st-expander {
         background-color: #e0f7fa !important; /* Fond bleu clair pour l'expander */
         border: 1px solid #004080 !important; /* Bordure bleu foncé */
         border-radius: 5px;
+        padding: 10px;
     }
-    .st-expander .st-expander-content {
+    .st-expander > div {
         background-color: #e0f7fa !important; /* Fond bleu clair à l'intérieur */
-    }
-    .st-expander .st-expander-header {
-        background-color: #e0f7fa !important; /* Fond bleu clair pour le header */
-        color: #004080 !important; /* Couleur du texte */
-        font-weight: bold;
     }
     /* Styles personnalisés pour les boutons */
     div.stButton > button {
@@ -58,6 +45,7 @@ st.markdown(
         border: none;
         padding: 8px 16px;
         font-weight: bold;
+        margin-top: 10px;
     }
     div.stButton > button:hover {
         background-color: #0066cc; /* Couleur de fond au survol */
