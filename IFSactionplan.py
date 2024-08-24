@@ -135,18 +135,18 @@ def main():
   # Ajout de la dropdown d'explications
     with st.expander("Comment utiliser cette application"):
         st.write("""
-            **Étapes d'utilisation:**
-            
-            1. **Téléchargez votre plan d'actions IFSv8:** Cliquez sur le bouton "Téléchargez votre plan d'action" et sélectionnez le fichier Excel contenant les non-conformités.
-            2. **Sélectionnez un numéro d'exigence:** Après avoir chargé le fichier, choisissez un numéro d'exigence spécifique à partir du menu déroulant.
-            3. **Recommandations:** Cliquez sur "Générer Recommandations" pour obtenir des suggestions de correction, preuves et actions correctives pour la non-conformité sélectionnée.
-            4. **Téléchargez les recommandations:** Une fois les recommandations générées, vous pouvez les télécharger sous forme de fichier texte ou DOCX.
+    **Étapes d'utilisation:**
+    
+    1. **Téléchargez votre plan d'actions IFSv8:** Cliquez sur le bouton "Téléchargez votre plan d'action" et sélectionnez le fichier Excel contenant les non-conformités.
+    2. **Sélectionnez un numéro d'exigence:** Après avoir chargé le fichier, choisissez un numéro d'exigence spécifique à partir du menu déroulant.
+    3. **Générez des recommandations:** Cliquez sur "Générer Recommandations" pour obtenir des suggestions de correction, preuves et actions correctives pour la non-conformité sélectionnée.
+    4. **Affichage des recommandations:** Une fois les recommandations générées, elles apparaîtront dans une fenêtre spécifique située sous la ligne de la non-conformité correspondante. Cette fenêtre possède un fond coloré pour une meilleure visibilité. Vous pouvez l'agrandir ou la rétrécir en utilisant le bouton situé à droite de la fenêtre.
+    5. **Téléchargez les recommandations:** Après la génération des recommandations, vous pouvez les télécharger sous forme de fichier texte ou DOCX.
 
-            **Résultat attendu:**
-            
-            Vous obtiendrez une liste de recommandations personnalisées basées sur les non-conformités identifiées dans votre plan d'action. Ces recommandations incluent des actions correctives, les types de preuves nécessaires, la cause probable, et les corrections immédiates.
-        """)
-
+    **Résultat attendu:**
+    
+    Vous obtiendrez une liste de recommandations personnalisées basées sur les non-conformités identifiées dans votre plan d'action. Ces recommandations incluront des actions correctives, les types de preuves nécessaires, la cause probable, et les corrections immédiates.
+""")
 
     # Initialiser la clé 'recommendation_expanders' si elle n'existe pas
     if 'recommendation_expanders' not in st.session_state:
