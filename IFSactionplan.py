@@ -107,7 +107,8 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     - Cause probable
     - Action corrective
 
-    Faire une conclusion en se basasnt sur le Guide IFSv8 en reprenant évnetuelelment les éléments des questions à poser et égalementa ttirer l'attention su ce qui peut constituer une non conformité majeure ou un KO concernat l'exigence
+    Faire une conclusion en se basasnt sur le Guide IFSv8 en reprenant évnetuelelment les éléments des questions à poser et également attirer l'attention su ce qui peut constituer une non conformité majeure ou un KO concernant l'exigence en question.
+    Pour cette conclusion il faut se limiter strictement aux recommandations et informations issus du guide IFSv8 en particulier {guide_row['Good practice']} et {guide_row['Example questions']}
     """
     
     messages = [
