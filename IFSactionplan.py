@@ -23,19 +23,18 @@ st.markdown(
     .banner {
         background-image: url('https://github.com/M00N69/BUSCAR/blob/main/logo%2002%20copie.jpg?raw=true');
         background-size: cover;
-        padding: 75px;
-        text-align: center;
+        height: 200px;
+        background-position: center;
         margin-bottom: 20px;
     }
     /* Styles personnalisés pour l'expander */
-    .st-expander {
+    div[role="group"] > div:first-child {
         background-color: #e0f7fa !important; /* Fond bleu clair pour l'expander */
         border: 1px solid #004080 !important; /* Bordure bleu foncé */
         border-radius: 5px;
-        padding: 10px;
     }
-    .st-expander > div {
-        background-color: #e0f7fa !important; /* Fond bleu clair à l'intérieur */
+    div[role="group"] > div:first-child h4 {
+        color: #004080 !important;
     }
     /* Styles personnalisés pour les boutons */
     div.stButton > button {
