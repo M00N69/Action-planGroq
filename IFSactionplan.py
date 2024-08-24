@@ -28,12 +28,12 @@ st.markdown(
         margin-bottom: 20px;
     }
     /* Styles personnalisés pour l'expander */
-    div[role="group"] > div:first-child {
+    .st-emotion-cache-1h9usn1 {
         background-color: #e0f7fa !important; /* Fond bleu clair pour l'expander */
         border: 1px solid #004080 !important; /* Bordure bleu foncé */
         border-radius: 5px;
     }
-    div[role="group"] > div:first-child .streamlit-expanderHeader {
+    .st-emotion-cache-p5msec {
         color: #004080 !important; /* Couleur du texte de l'expander */
     }
     /* Styles personnalisés pour les boutons */
