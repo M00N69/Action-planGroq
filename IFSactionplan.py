@@ -29,11 +29,37 @@ st.markdown(
         white-space: normal !important;
         word-wrap: break-word !important;
     }
+    /* Styles personnalisés pour l'expander */
+    .streamlit-expanderHeader {
+        background-color: #e0f7fa !important; /* Fond bleu clair */
+        color: #004080 !important; /* Couleur du texte */
+        font-weight: bold;
+        border-radius: 5px;
+    }
+    .streamlit-expander {
+        border: 1px solid #004080 !important;
+        border-radius: 5px;
+        background-color: #e0f7fa !important;
+        padding: 10px;
+    }
+    /* Styles personnalisés pour les boutons */
+    div.stButton > button {
+        background-color: #004080; /* Couleur de fond */
+        color: white;
+        border-radius: 5px;
+        border: none;
+        padding: 8px 16px;
+        font-weight: bold;
+    }
+    div.stButton > button:hover {
+        background-color: #0066cc; /* Couleur de fond au survol */
+        color: white;
+    }
     </style>
-    <div class="banner"></div>
     """,
     unsafe_allow_html=True
 )
+
 
 # Fonction pour configurer le client Groq
 def get_groq_client():
