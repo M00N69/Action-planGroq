@@ -141,7 +141,6 @@ def main():
     2. **Sélectionnez un numéro d'exigence:** Après avoir chargé le fichier, choisissez un numéro d'exigence spécifique à partir du menu déroulant.
     3. **Générez des recommandations:** Cliquez sur "Générer Recommandations" pour obtenir des suggestions de correction, preuves et actions correctives pour la non-conformité sélectionnée.
     4. **Affichage des recommandations:** Une fois les recommandations générées, elles apparaîtront dans une fenêtre spécifique située sous la ligne de la non-conformité correspondante. Cette fenêtre possède un fond coloré pour une meilleure visibilité. Vous pouvez l'agrandir ou la rétrécir en utilisant le bouton situé à droite de la fenêtre.
-    5. **Téléchargez les recommandations:** Après la génération des recommandations, vous pouvez les télécharger sous forme de fichier texte ou DOCX.
 
     **Résultat attendu:**
     
