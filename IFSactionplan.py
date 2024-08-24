@@ -106,6 +106,8 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     - Type de preuve
     - Cause probable
     - Action corrective
+
+    Faire une conclusion en se basasnt sur le Guide IFSv8 en reprenant évnetuelelment les éléments des questions à poser et égalementa ttirer l'attention su ce qui peut constituer une non conformité majeure ou un KO concernat l'exigence
     """
     
     messages = [
