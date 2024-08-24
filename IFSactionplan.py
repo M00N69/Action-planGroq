@@ -1,8 +1,5 @@
 import streamlit as st
 import pandas as pd
-from io import BytesIO
-from docx import Document
-from fpdf import FPDF
 from groq import Groq
 
 # Configuration de la page
@@ -46,13 +43,9 @@ def get_groq_client():
 # Fonction pour charger le fichier Excel avec le plan d'action
 def load_action_plan(uploaded_file):
     try:
-        # Charger le fichier Excel
         action_plan_df = pd.read_excel(uploaded_file, header=12)
-        
-        # Sélectionner uniquement les colonnes pertinentes
-        expected_columns = ["Numéro d'exigence", "Exigence IFS Food 8", "Notation", "Explication (par l’auditeur/l’évaluateur)"]
+        expected_columns = ["Numéro d'exigence", "Exigence IFS Food 8", "Explication (par l’auditeur/l’évaluateur)"]
         action_plan_df = action_plan_df[expected_columns]
-        
         return action_plan_df
     except Exception as e:
         st.error(f"Erreur lors de la lecture du fichier: {str(e)}")
@@ -118,6 +111,10 @@ def main():
 
     st.write("Téléchargez votre plan d'action et obtenez des recommandations pour les corrections et les actions correctives.")
 
+    # Initialiser la clé 'recommendation_expanders' si elle n'existe pas
+    if 'recommendation_expanders' not in st.session_state:
+        st.session_state['recommendation_expanders'] = {}
+
     # Upload du fichier Excel du plan d'action
     uploaded_file = st.file_uploader("Téléchargez votre plan d'action (fichier Excel)", type=["xlsx"])
     
@@ -125,12 +122,14 @@ def main():
         action_plan_df = load_action_plan(uploaded_file)
         if action_plan_df is not None:
             guide_df = pd.read_csv("https://raw.githubusercontent.com/M00N69/Action-planGroq/main/Guide%20Checklist_IFS%20Food%20V%208%20-%20CHECKLIST.csv")
-
-            # Affichage du plan d'action avec les boutons de génération des recommandations
+            
+            st.write("## Plan d'Action IFS")
             for index, row in action_plan_df.iterrows():
-                cols = st.columns([4, 1])
-                cols[0].markdown(f"**Numéro d'exigence:** {row['Numéro d\'exigence']} - {row['Exigence IFS Food 8']}")
-                cols[1].button(
+                cols = st.columns([2, 3, 3, 2])
+                cols[0].write(row["Numéro d'exigence"])
+                cols[1].write(row["Exigence IFS Food 8"])
+                cols[2].write(row["Explication (par l’auditeur/l’évaluateur)"])
+                cols[3].button(
                     "Générer Recommandation", 
                     key=f"generate_{index}",
                     on_click=generate_recommendation_and_expand,
@@ -139,10 +138,9 @@ def main():
 
                 # Afficher les recommandations dans un expander s'il est déjà généré
                 if index in st.session_state['recommendation_expanders']:
-                    st.session_state['recommendation_expanders'][index].markdown(
-                        st.session_state['recommendation_expanders'][index]['text']
-                    )
-                    
+                    expander = st.expander(f"Recommandation pour Numéro d'exigence: {row['Numéro d\'exigence']}", expanded=True)
+                    expander.markdown(st.session_state['recommendation_expanders'][index]['text'])
+
 def generate_recommendation_and_expand(index, row, guide_df):
     guide_row = get_guide_info(row["Numéro d'exigence"], guide_df)
     
@@ -151,14 +149,10 @@ def generate_recommendation_and_expand(index, row, guide_df):
         
         if recommendation_text:
             st.success("Recommandation générée avec succès!")
-            expander = st.expander(f"Recommandation pour Numéro d'exigence: {row['Numéro d\'exigence']}", expanded=True)
-            expander.markdown(recommendation_text)
-            
-            # Sauvegarde de l'expander dans le session_state
             st.session_state['recommendation_expanders'][index] = {
                 'text': recommendation_text,
-                'expander': expander
             }
 
 if __name__ == "__main__":
     main()
+
