@@ -38,10 +38,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Initialisation des variables d'état pour les expanders
-if 'recommendation_expanders' not in st.session_state:
-    st.session_state['recommendation_expanders'] = {}
-
 # Fonction pour configurer le client Groq
 def get_groq_client():
     """Initialise et renvoie un client Groq avec la clé API."""
@@ -52,11 +48,11 @@ def load_action_plan(uploaded_file):
     try:
         # Charger le fichier Excel
         action_plan_df = pd.read_excel(uploaded_file, header=12)
+        
         # Sélectionner uniquement les colonnes pertinentes
-        expected_columns = ["requirementNo", "requirementText", "requirementScore", "requirementExplanation"]
+        expected_columns = ["Numéro d'exigence", "Exigence IFS Food 8", "Notation", "Explication (par l’auditeur/l’évaluateur)"]
         action_plan_df = action_plan_df[expected_columns]
-        # Renommer les colonnes en français
-        action_plan_df.columns = ["Numéro d'exigence", "Exigence IFS Food 8", "Notation", "Explication (par l’auditeur/l’évaluateur)"]
+        
         return action_plan_df
     except Exception as e:
         st.error(f"Erreur lors de la lecture du fichier: {str(e)}")
