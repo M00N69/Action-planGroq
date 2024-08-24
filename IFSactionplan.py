@@ -20,11 +20,12 @@ st.markdown(
         margin-bottom: 20px;
     }
     /* Styles pour la bannière */
-       .banner {
+    .banner {
         background-image: url('https://github.com/M00N69/BUSCAR/blob/main/logo%2002%20copie.jpg?raw=true');
         background-size: cover;
-        padding: 75px;
-        text-align: center;
+        height: 200px;
+        background-position: center;
+        margin-bottom: 20px;
     }
     /* Styles personnalisés pour l'expander */
     div.streamlit-expanderHeader {
@@ -52,6 +53,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Ajouter la bannière
+st.markdown('<div class="banner"></div>', unsafe_allow_html=True)
 
 # Fonction pour configurer le client Groq
 def get_groq_client():
