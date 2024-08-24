@@ -134,7 +134,7 @@ def get_guide_info(num_exigence, guide_df):
 # Fonction pour afficher les recommandations avec un rendu Markdown
 def display_recommendations(recommendations_df):
     for index, row in recommendations_df.iterrows():
-        with st.expander(f"Recommandation pour Numéro d'exigence: {row['Numéro d'exigence']}"):
+        with st.expander(f"Recommandation pour Numéro d'exigence: {row["Numéro d'exigence"]}"):
             st.markdown(row["Recommandation"])
 
 # Fonction pour créer un fichier texte des recommandations
