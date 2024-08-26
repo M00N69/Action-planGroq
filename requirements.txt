@@ -5,4 +5,3 @@ xlsxwriter
 groq
 python-docx
 fpdf
-spacy
