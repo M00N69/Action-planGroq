@@ -66,9 +66,13 @@ def get_groq_client():
 # Fonction pour charger le fichier Excel avec le plan d'action
 def load_action_plan(uploaded_file):
     try:
-        action_plan_df = pd.read_excel(uploaded_file, header=12)
-        expected_columns = ["Numéro d'exigence", "Exigence IFS Food 8", "Explication (par l’auditeur/l’évaluateur)"]
-        action_plan_df = action_plan_df[expected_columns]
+        # Load the Excel file starting from row 12 (0-indexed)
+        action_plan_df = pd.read_excel(uploaded_file, header=11)
+
+        # Extract only the necessary columns
+        action_plan_df = action_plan_df[["requirementNo", "requirementText", "requirementExplanation"]]
+        action_plan_df.columns = ["Numéro d'exigence", "Exigence IFS Food 8", "Explication (par l’auditeur/l’évaluateur)"]
+
         return action_plan_df
     except Exception as e:
         st.error(f"Erreur lors de la lecture du fichier: {str(e)}")
