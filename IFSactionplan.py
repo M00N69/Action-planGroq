@@ -126,7 +126,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
 
 # Fonction pour récupérer les informations du guide en fonction du numéro d'exigence
 def get_guide_info(num_exigence, guide_df):
-    guide_row = guide_df[guide_df['NUM_REQ'] == num_exigence]
+    guide_row = guide_df[guide_df['NUM_REQ'].str.contains(num_exigence, na=False)]
     if guide_row.empty:
         st.error(f"Aucune correspondance trouvée pour le numéro d'exigence : {num_exigence}")
         return None
