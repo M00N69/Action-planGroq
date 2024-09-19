@@ -134,8 +134,19 @@ def get_guide_info(num_exigence, guide_df):
 
 # Fonction principale
 def main():
-    st.markdown('<div class="main-header">Assistant VisiPilot pour Plan d\'Actions IFS</div>', unsafe_allow_html=True)
-    
+    st.markdown(
+        """
+        <style>
+        .main-header {
+            font-size: 36px; /* Taille de la police */
+            font-weight: bold; /* Gras */
+            color: #333333; /* Couleur du texte */
+        }
+        </style>
+        <div class="main-header">Assistant VisiPilot pour Plan d'Actions IFS</div>
+        """, 
+        unsafe_allow_html=True
+    ) 
   # Ajout de la dropdown d'explications
     with st.expander("Comment utiliser cette application"):
         st.write("""
