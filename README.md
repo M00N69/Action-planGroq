@@ -1,99 +1,299 @@
-# **README : Application Streamlit pour Plan d'Actions IFS Food 8**
+# Assistant VisiPilot pour Plan d'Actions IFS
 
-## **Introduction**
+Ce projet est une application Streamlit conçue pour aider les utilisateurs à générer des recommandations structurées pour les non-conformités identifiées dans un plan d'action IFSv8. L'application utilise des fichiers Excel contenant les plans d'action et un guide IFSv8 pour fournir des recommandations basées sur les bonnes pratiques et les éléments à vérifier. Ce README fournit une description détaillée de la structure du code, des fonctions principales, de la logique de construction, et des options disponibles.
 
-Cette application Streamlit est conçue pour assister les utilisateurs dans la gestion des plans d'action liés à l'IFS Food version 8. Elle permet de charger un plan d'action sous forme de fichier Excel, de générer des recommandations d'actions correctives basées sur des non-conformités, et de télécharger ces recommandations dans divers formats (CSV, texte, DOCX).
+## Structure du Code
 
-## **Conception de l'application**
+Le code est organisé en plusieurs sections principales, chacune ayant une fonction spécifique :
 
-### **Structure Générale**
+### 1. Configuration de la Page
 
-L'application est structurée autour de plusieurs fonctions principales, chacune ayant un rôle spécifique dans le processus global de gestion du plan d'action :
+```python
+import streamlit as st
+import pandas as pd
+from groq import Groq
 
-1. **Interface Utilisateur et CSS Personnalisé :**
-   - `add_css_styles()`: Ajoute des styles CSS personnalisés pour améliorer l'esthétique et la présentation de l'application.
+# Configuration de la page
+st.set_page_config(layout="wide")
+```
 
-2. **Gestion des Données :**
-   - `load_action_plan(uploaded_file)`: Charge et nettoie le fichier Excel contenant le plan d'action. Il s'assure que les colonnes attendues sont présentes et retourne un DataFrame Pandas.
-   - `get_guide_info(num_exigence, guide_df)`: Extrait les informations pertinentes du guide IFSv8 pour une exigence spécifique.
+- **Description** : Cette section importe les bibliothèques nécessaires et configure la page Streamlit pour utiliser un layout large, offrant ainsi plus d'espace pour l'affichage des données.
 
-3. **Génération des Recommandations :**
-   - `get_groq_client()`: Initialise et retourne un client Groq, nécessaire pour la génération des recommandations via l'API.
-   - `generate_ai_recommendation_groq(non_conformity, guide_row)`: Génère une recommandation basée sur une non-conformité spécifique et les informations du guide IFSv8.
-   - `display_recommendations(recommendations_df)`: Affiche les recommandations générées sur l'interface Streamlit.
+### 2. Ajout des Styles CSS Personnalisés
 
-4. **Export des Recommandations :**
-   - `generate_text_file(recommendations_df)`: Crée un fichier texte contenant les recommandations.
-   - `generate_docx_file(recommendations_df)`: Crée un document Word (DOCX) avec les recommandations.
-   - `generate_pdf_file(recommendations_df)`: Crée un fichier PDF des recommandations.
+```python
+st.markdown(
+    """
+    <style>
+    .main-header {
+        font-size: 24px;
+        font-weight: bold;
+        color: #004080;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    .dataframe-container {
+        margin-bottom: 20px;
+    }
+    /* Styles pour la bannière */
+    .banner {
+        background-image: url('https://github.com/M00N69/BUSCAR/blob/main/logo%2002%20copie.jpg?raw=true');
+        background-size: cover;
+        height: 200px;
+        background-position: center;
+        margin-bottom: 20px;
+    }
+    /* Styles personnalisés pour l'expander */
+    .st-emotion-cache-1h9usn1 {
+        background-color: #e0f7fa !important; /* Fond bleu clair pour l'expander */
+        border: 1px solid #004080 !important; /* Bordure bleu foncé */
+        border-radius: 5px;
+    }
+    .st-emotion-cache-p5msec {
+        color: #004080 !important; /* Couleur du texte de l'expander */
+    }
+    /* Styles personnalisés pour les boutons */
+    div.stButton > button {
+        background-color: #004080; /* Couleur de fond */
+        color: white;
+        border-radius: 5px;
+        border: none;
+        padding: 8px 16px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    div.stButton > button:hover {
+        background-color: #0066cc; /* Couleur de fond au survol */
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+```
 
-### **Fonctionnalité Principale**
+- **Description** : Cette section ajoute des styles CSS personnalisés pour améliorer l'apparence de l'application. Les styles incluent des classes pour le header principal, les conteneurs de DataFrame, la bannière, les expanders, et les boutons.
 
-L'application permet aux utilisateurs de :
+### 3. Ajout de la Bannière
 
-1. **Télécharger un plan d'action sous format Excel.**
-2. **Sélectionner un numéro d'exigence spécifique.**
-3. **Générer des recommandations d'actions correctives à l'aide de l'API Groq.**
-4. **Visualiser les recommandations générées directement sur l'application.**
-5. **Télécharger les recommandations dans divers formats (CSV, texte, DOCX).**
+```python
+# Ajouter la bannière
+st.markdown('<div class="banner"></div>', unsafe_allow_html=True)
+```
 
-### **Utilisation de l'API Groq**
+- **Description** : Cette section ajoute une bannière en haut de la page en utilisant une image hébergée sur GitHub.
 
-L'API Groq est utilisée pour générer des recommandations structurées basées sur des prompts spécifiques liés aux non-conformités. Cette approche permet de fournir des recommandations personnalisées et pertinentes pour chaque exigence.
+### 4. Fonction pour Configurer le Client Groq
 
-### **Formats de Sortie**
+```python
+def get_groq_client():
+    """Initialise et renvoie un client Groq avec la clé API."""
+    return Groq(api_key=st.secrets["GROQ_API_KEY"])
+```
 
-Les recommandations peuvent être téléchargées dans plusieurs formats :
+- **Description** : Cette fonction initialise et renvoie un client Groq en utilisant la clé API stockée dans les secrets de Streamlit.
 
-- **CSV** : Un fichier simple qui peut être ouvert dans Excel ou tout autre logiciel de tableur.
-- **Texte** : Un fichier texte brut pour une lecture rapide.
-- **DOCX** : Un document Word pour un formatage plus sophistiqué et une utilisation dans des rapports officiels.
+### 5. Fonction pour Charger le Fichier Excel avec le Plan d'Action
 
-## **Fonctionnement**
+```python
+def load_action_plan(uploaded_file):
+    try:
+        # Load the Excel file starting from row 12 (0-indexed)
+        action_plan_df = pd.read_excel(uploaded_file, header=11)
 
-### **1. Lancer l'application sur Streamlit Cloud**
+        # Extract only the necessary columns
+        action_plan_df = action_plan_df[["requirementNo", "requirementText", "requirementExplanation"]]
+        action_plan_df.columns = ["Numéro d'exigence", "Exigence IFS Food 8", "Explication (par l’auditeur/l’évaluateur)"]
 
-Pour lancer l'application sur **Streamlit Cloud**, suivez les étapes ci-dessous :
+        return action_plan_df
+    except Exception as e:
+        st.error(f"Erreur lors de la lecture du fichier: {str(e)}")
+        return None
+```
 
-1. **Créez un compte** sur [Streamlit Cloud](https://streamlit.io/cloud).
-2. **Déployez l'application** en liant votre dépôt GitHub contenant le code de l'application. Streamlit Cloud se chargera automatiquement d'exécuter le script Python.
-3. **Configurer les secrets** : 
-   - Accédez aux **Settings** de votre application sur Streamlit Cloud.
-   - Ajoutez les **secrets** nécessaires, notamment `GROQ_API_KEY` pour l'accès à l'API Groq.
+- **Description** : Cette fonction charge un fichier Excel contenant le plan d'action IFSv8. Elle extrait uniquement les colonnes nécessaires et renomme les colonnes pour une meilleure lisibilité.
 
-### **2. Utilisation de l'interface sur Streamlit Cloud**
+### 6. Fonction pour Générer un Prompt Basé sur une Non-Conformité
 
-1. **Téléchargement du fichier Excel :**
-   - Cliquez sur le bouton pour télécharger le fichier Excel contenant le plan d'action.
-   - L'application affichera un tableau contenant les données du plan d'action.
+```python
+def generate_ai_recommendation_groq(non_conformity, guide_row):
+    client = get_groq_client()
+    general_context = (
+        "En tant qu'expert en IFS Food 8 et dans la gestion des plans d'action, "
+        "tu dois me fournir des recommandations structurées pour la correction, "
+        "le type de preuve, la cause probable, et les actions correctives."
+    )
+    prompt = f"""
+    {general_context}
 
-2. **Sélection du numéro d'exigence :**
-   - Utilisez le menu déroulant pour sélectionner un numéro d'exigence spécifique pour lequel vous souhaitez générer une recommandation.
+    Voici une non-conformité issue d'un audit IFS Food 8 :
+    - Exigence : {non_conformity['Numéro d\'exigence']}
+    - Description : {non_conformity['Exigence IFS Food 8']}
+    - Constat détaillé : {non_conformity['Explication (par l’auditeur/l’évaluateur)']}
 
-3. **Génération des recommandations :**
-   - Cliquez sur le bouton "Générer Recommandations". L'application enverra une requête à l'API Groq pour obtenir la recommandation.
-   - La recommandation sera affichée sous forme de texte structuré.
+    Il est impératif que les recommandations prennent en compte les éléments suivants du guide IFSv8 pour cette exigence :
+    - Bonnes pratiques à suivre : {guide_row['Good practice']}
+    - Éléments à vérifier : {guide_row['Elements to check']}
+    - Exemple de question à poser : {guide_row['Example questions']}
 
-4. **Téléchargement des recommandations :**
-   - Les recommandations générées peuvent être téléchargées dans différents formats via les boutons de téléchargement.
+    Fournissez une recommandation comprenant :
+    - Correction immédiate
+    - Type de preuve
+    - Cause probable
+    - Action corrective
 
-### **Conseils pour Streamlit Cloud**
+    Faire une conclusion, en français, en se basant sur le Guide IFSv8 en reprenant éventuellement les éléments des questions à poser et également attirer l'attention sur les bonnes pratiques concernant l'exigence en question.
+    Pour cette conclusion il faut se limiter strictement aux recommandations et informations issus du guide IFSv8 en particulier {guide_row['Good practice']} et {guide_row['Example questions']}
+    """
 
-- **Optimisation des performances** : Assurez-vous que les fichiers téléchargés ne sont pas trop volumineux pour éviter des ralentissements ou des limitations de mémoire sur Streamlit Cloud.
-- **Vérification des erreurs** : Si l'application ne génère pas de recommandations, vérifiez les secrets API et assurez-vous que l'API Groq est correctement configurée.
+    messages = [
+        {"role": "system", "content": "Veuillez générer une recommandation structurée pour la non-conformité suivante :"},
+        {"role": "user", "content": prompt}
+    ]
 
-## **Dépendances**
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=messages,
+            model="llama-3.1-70b-versatile"
+        )
+        return chat_completion.choices[0].message.content
+    except Exception as e:
+        st.error(f"Erreur lors de la génération de la recommandation: {str(e)}")
+        return None
+```
 
-L'application nécessite les bibliothèques suivantes :
+- **Description** : Cette fonction génère un prompt basé sur une non-conformité identifiée dans le plan d'action IFSv8. Elle utilise le client Groq pour obtenir des recommandations structurées pour la correction, le type de preuve, la cause probable, et les actions correctives.
 
-- `streamlit`
-- `pandas`
-- `groq`
-- `docx` (de python-docx)
-- `fpdf`
+### 7. Fonction pour Récupérer les Informations du Guide en Fonction du Numéro d'Exigence
 
-Ces dépendances seront automatiquement installées sur Streamlit Cloud à partir du fichier `requirements.txt` dans votre dépôt GitHub.
+```python
+def get_guide_info(num_exigence, guide_df):
+    guide_row = guide_df[guide_df['NUM_REQ'].str.contains(num_exigence, na=False)]
+    if guide_row.empty:
+        st.error(f"Aucune correspondance trouvée pour le numéro d'exigence : {num_exigence}")
+        return None
+    return guide_row.iloc[0]
+```
 
-## **Conclusion**
+- **Description** : Cette fonction récupère les informations du guide IFSv8 en fonction du numéro d'exigence. Elle recherche la ligne correspondante dans le DataFrame du guide et renvoie les informations nécessaires.
 
-Cette application est un outil puissant pour automatiser la génération de recommandations correctives dans le cadre des audits IFS Food 8. En combinant une interface utilisateur simple avec l'intelligence artificielle, elle permet de gagner du temps et d'améliorer la précision des recommandations d'actions correctives.
+### 8. Fonction Principale
+
+```python
+def main():
+    st.markdown(
+        """
+        <style>
+        .main-header {
+            font-size: 36px; /* Taille de la police */
+            font-weight: bold; /* Gras */
+            color: #333333; /* Couleur du texte */
+        }
+        </style>
+        <div class="main-header">Assistant VisiPilot pour Plan d'Actions IFS</div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Ajout de la dropdown d'explications
+    with st.expander("Comment utiliser cette application"):
+        st.write("""
+    **Étapes d'utilisation:**
+
+    1. **Téléchargez votre plan d'actions IFSv8:** Cliquez sur le bouton "Téléchargez votre plan d'action" et sélectionnez le fichier Excel contenant les non-conformités.
+    2. **Sélectionnez un numéro d'exigence:** Après avoir chargé le fichier, choisissez un numéro d'exigence spécifique à partir du menu déroulant.
+    3. **Générez des recommandations:** Cliquez sur "Générer Recommandations" pour obtenir des suggestions de correction, preuves et actions correctives pour la non-conformité sélectionnée.
+    4. **Affichage des recommandations:** Une fois les recommandations générées, elles apparaîtront dans une fenêtre spécifique située sous la ligne de la non-conformité correspondante. Cette fenêtre possède un fond coloré pour une meilleure visibilité. Vous pouvez l'agrandir ou la rétrécir en utilisant le bouton situé à droite de la fenêtre.
+
+    **Résultat attendu:**
+
+    Vous obtiendrez une liste de recommandations personnalisées basées sur les non-conformités identifiées dans votre plan d'action. Ces recommandations incluront des actions correctives, les types de preuves nécessaires, la cause probable, et les corrections immédiates.
+""")
+
+    # Initialiser la clé 'recommendation_expanders' si elle n'existe pas
+    if 'recommendation_expanders' not in st.session_state:
+        st.session_state['recommendation_expanders'] = {}
+
+    # Upload du fichier Excel du plan d'action
+    uploaded_file = st.file_uploader("Téléchargez votre plan d'action (fichier Excel)", type=["xlsx"])
+
+    if uploaded_file:
+        action_plan_df = load_action_plan(uploaded_file)
+        if action_plan_df is not None:
+            guide_df = pd.read_csv("https://raw.githubusercontent.com/M00N69/Action-planGroq/main/Guide%20Checklist_IFS%20Food%20V%208%20-%20CHECKLIST.csv")
+
+            st.write("## Plan d'Action IFS")
+            for index, row in action_plan_df.iterrows():
+                cols = st.columns([1, 4, 4, 2])
+                cols[0].write(row["Numéro d'exigence"])
+                cols[1].write(row["Exigence IFS Food 8"])
+                cols[2].write(row["Explication (par l’auditeur/l’évaluateur)"])
+                cols[3].button(
+                    "Générer Recommandation",
+                    key=f"generate_{index}",
+                    on_click=generate_recommendation_and_expand,
+                    args=(index, row, guide_df)
+                )
+
+                # Afficher les recommandations dans un expander s'il est déjà généré
+                if index in st.session_state['recommendation_expanders']:
+                    expander = st.expander(f"Recommandation pour Numéro d'exigence: {row['Numéro d\'exigence']}", expanded=True)
+                    expander.markdown(st.session_state['recommendation_expanders'][index]['text'])
+```
+
+- **Description** : Cette fonction principale gère l'interface utilisateur de l'application. Elle affiche un header principal, une bannière, et un expander avec des instructions d'utilisation. Elle permet à l'utilisateur de télécharger un fichier Excel contenant le plan d'action IFSv8, de sélectionner un numéro d'exigence, et de générer des recommandations pour les non-conformités identifiées. Les recommandations générées sont affichées dans des expanders pour une meilleure visibilité.
+
+### 9. Fonction pour Générer des Recommandations et les Afficher dans un Expander
+
+```python
+def generate_recommendation_and_expand(index, row, guide_df):
+    guide_row = get_guide_info(row["Numéro d'exigence"], guide_df)
+
+    if guide_row is not None:
+        recommendation_text = generate_ai_recommendation_groq(row, guide_row)
+
+        if recommendation_text:
+            st.success("Recommandation générée avec succès!")
+            st.session_state['recommendation_expanders'][index] = {
+                'text': recommendation_text,
+            }
+```
+
+- **Description** : Cette fonction génère des recommandations pour une non-conformité spécifique et les affiche dans un expander. Elle utilise les informations du guide IFSv8 pour fournir des recommandations structurées.
+
+### 10. Exécution de la Fonction Principale
+
+```python
+if __name__ == "__main__":
+    main()
+```
+
+- **Description** : Cette section exécute la fonction principale `main()` lorsque le script est exécuté directement.
+
+## Logique de Construction
+
+1. **Configuration Initiale** :
+   - La page Streamlit est configurée pour utiliser un layout large.
+   - Des styles CSS personnalisés sont ajoutés pour améliorer l'apparence de l'application.
+
+2. **Ajout de la Bannière** :
+   - Une bannière est ajoutée en haut de la page pour améliorer l'esthétique de l'application.
+
+3. **Initialisation du Client Groq** :
+   - Une fonction est définie pour initialiser et renvoyer un client Groq en utilisant la clé API stockée dans les secrets de Streamlit.
+
+4. **Chargement du Fichier Excel** :
+   - Une fonction est définie pour charger un fichier Excel contenant le plan d'action IFSv8 et extraire les colonnes nécessaires.
+
+5. **Génération des Recommandations** :
+   - Une fonction est définie pour générer un prompt basé sur une non-conformité identifiée dans le plan d'action IFSv8.
+   - Une autre fonction est définie pour récupérer les informations du guide IFSv8 en fonction du numéro d'exigence.
+
+6. **Interface Utilisateur** :
+   - La fonction principale gère l'interface utilisateur de l'application.
+   - Elle permet à l'utilisateur de télécharger un fichier Excel, de sélectionner un numéro d'exigence, et de générer des recommandations pour les non-conformités identifiées.
+   - Les recommandations générées sont affichées dans des expanders pour une meilleure visibilité.
+
+## Conclusion
+
+Ce projet offre une solution complète pour générer des recommandations structurées pour les non-conformités identifiées dans un plan d'action IFSv8. Les fonctionnalités actuelles permettent une extraction et une visualisation efficaces des données, avec des options de filtrage et de téléchargement pour une utilisation pratique. Des fonctionnalités supplémentaires sont en cours de développement pour offrir une expérience utilisateur encore plus riche.
