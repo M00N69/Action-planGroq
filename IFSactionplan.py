@@ -117,7 +117,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     try:
         chat_completion = client.chat.completions.create(
             messages=messages,
-            model="deepseek-r1-distill-llama-70b"
+            model="llama-3.3-70b-versatile"
         )
         return chat_completion.choices[0].message.content
     except Exception as e:
