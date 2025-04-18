@@ -117,7 +117,7 @@ def generate_ai_recommendation_groq(non_conformity, guide_row):
     try:
         chat_completion = client.chat.completions.create(
             messages=messages,
-            model="llama-3.3-70b-versatile"
+            model="meta-llama/llama-4-maverick-17b-128e-instruct"
         )
         return chat_completion.choices[0].message.content
     except Exception as e:
